@@ -1,5 +1,5 @@
 import express from "express"
-import { register, login, getAll, getUser, deleteUser, updateUser, blockUser, unblockUser, handleRefreshToken } from "../controllers/user_controller.js"
+import { register, login, getAll, getUser, deleteUser, updateUser, blockUser, unblockUser, handleRefreshToken , logout} from "../controllers/user_controller.js"
 import { authMiddleware, isAdmin } from "../middlewares/authMiddleware.js"
 
 const router = express.Router()
@@ -10,6 +10,7 @@ router.post('/login', login)
 router.get('/getAll', getAll)
 router.get('/:id', authMiddleware, isAdmin, getUser)
 router.get('/refresh', handleRefreshToken)
+router.get('/logout',logout)
 
 
 router.delete('/:id', deleteUser)

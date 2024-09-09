@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from "dotenv"
 import dbConnect from './config/dbConnection.js';
 import authRoute from "./routes/auth_route.js"
+import productRoute from "./routes/product_route.js"
 import {notFound,errorHandler} from "./middlewares/errorHandler.js"
 import cookieParser from 'cookie-parser';
 
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.use("/api/user",authRoute)
+app.use("/api/product",productRoute)
 
 
 app.use(notFound)

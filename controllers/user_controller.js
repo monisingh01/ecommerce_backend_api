@@ -183,6 +183,33 @@ if(!cookies?.refreshToken)
 
 
 
+// logout Functionality
+export const logout = asyncHandler(async(req,res)=>{
+    const cookies = req.cookies
+    if(!cookies?.refreshToken) {
+        throw new Error ("No refresh token in cookies")
+    }
+    const refreshToken = cookies.refreshToken
+    const user = await userModel.findOne({refreshToken})
+    if(!user){
+        res.clearCookie("refreshToken",{
+            httponly: true,
+            secure : true,
+        })
+        return res.sendStatus(204)   //forbidden
+    }
+    await userModel.findOneAndUpdate(refreshToken,{
+        refreshToken: "",
+    })
+    res.clearCookie("refreshToken",{
+        httponly: true,
+        secure : true,
+    })
+    return res.sendStatus(204)   //forbidden
+
+})
+
+
 
 // Update User by id
 
