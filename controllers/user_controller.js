@@ -157,28 +157,28 @@ export const handleRefreshToken = asyncHandler(async(req,res)=>{
 const cookies = req.cookies
 console.log(cookies);
 
-// if(!cookies?.refreshToken) 
-// {
-//     throw new Error("No Refresh token in Cookies")
-// }
-//     const refreshToken = cookies.refreshToken
-//     console.log(refreshToken);
+if(!cookies?.refreshToken) 
+{
+    throw new Error("No Refresh token in Cookies")
+}
+    const refreshToken = cookies.refreshToken
+    console.log(refreshToken);
     
-//     const user = await userModel.findOne({ refreshToken})
+    const user = await userModel.findOne({ refreshToken})
 
-//     if(!user)
-//          {
-//         throw new Error ("No Refresh token in db or not matched")
-//          }
-//         //  verify the token
-//         jwt.verify(refreshToken, process.env.SECRET_KEY, (err,decoded)=>{
-//     if(err || user._id.toString() !== decoded.id){
-//         throw new Error ("There is something wrong with refresh token")
-//     }
-//     // Generate a new access token
-//     const accessToken = generateToken(user?._id)
-//     res.json({accessToken})
-//         })
+    if(!user)
+         {
+        throw new Error ("No Refresh token in db or not matched")
+         }
+        //  verify the token
+        jwt.verify(refreshToken, process.env.SECRET_KEY, (err,decoded)=>{
+    if(err || user._id.toString() !== decoded.id){
+        throw new Error ("There is something wrong with refresh token")
+    }
+    // Generate a new access token
+    const accessToken = generateToken(user?._id)
+    res.json({accessToken})
+        })
 })
 
 
