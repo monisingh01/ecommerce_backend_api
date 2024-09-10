@@ -5,6 +5,8 @@ import authRoute from "./routes/auth_route.js"
 import productRoute from "./routes/product_route.js"
 import {notFound,errorHandler} from "./middlewares/errorHandler.js"
 import cookieParser from 'cookie-parser';
+import morgan from "morgan"
+ 
 
 dotenv.config()
 
@@ -12,6 +14,8 @@ const app = express()
 
 dbConnect()
 
+
+app.use(morgan('dev'))
 app.use(express.json())
 app.use(cookieParser())
 

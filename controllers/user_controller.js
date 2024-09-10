@@ -8,13 +8,13 @@ import jwt from "jsonwebtoken"
 
 
 // User Register
-export const register = asyncHandler(async (req, res) => {
+export const register = asyncHandler(async (req, res, next) => {
     try {
 
         const { email, password } = req.body
         // console.log("",req.body);
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        // const hashedPassword = await bcrypt.hash(password, 10)
 
 
         const findUser = await userModel.findOne({ email })
@@ -22,7 +22,7 @@ export const register = asyncHandler(async (req, res) => {
             // Create a new User
             const newUser = await userModel.create({
                 ...req.body,
-                password: hashedPassword,
+                password,
             })
             return res.status(200).json({
                 success: true,
@@ -59,13 +59,13 @@ export const login = asyncHandler(async (req, res) => {
             })
         }
 
-        const isMatchPass = await bcrypt.compare(password, user.password)
-        if (!isMatchPass) {
-            return res.status(400).json({
-                success: false,
-                message: "Email and password is not valid"
-            })
-        }
+        // const isMatchPass = await bcrypt.compare(password, user.password)
+        // if (!isMatchPass) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Email and password is not valid"
+        //     })
+        // }
         const refreshToken = await generateRefreshToken(user?.id)
         const updateUser = await userModel.findByIdAndUpdate(user.id,
             {
@@ -101,7 +101,7 @@ export const login = asyncHandler(async (req, res) => {
         })
     }
 })
- 
+
 
 
 
@@ -129,7 +129,7 @@ export const getAll = asyncHandler(async (req, res) => {
 export const getUser = asyncHandler(async (req, res) => {
     const { id } = req.params
     console.log("Received User ID:", id);  // Log the ID to verify
-    
+
     validateMongoDbId(id)
 
     try {
@@ -151,59 +151,57 @@ export const getUser = asyncHandler(async (req, res) => {
 
 // handle refresh Token 
 
-export const handleRefreshToken = asyncHandler(async(req,res)=>{
-    console.log("running",handleRefreshToken);
-    
-const cookies = req.cookies
-console.log(cookies);
+export const handleRefreshToken = asyncHandler(async (req, res) => {
+    console.log("running", handleRefreshToken);
 
-if(!cookies?.refreshToken) 
-{
-    throw new Error("No Refresh token in Cookies")
-}
+    const cookies = req.cookies
+    console.log(cookies);
+
+    if (!cookies?.refreshToken) {
+        throw new Error("No Refresh token in Cookies")
+    }
     const refreshToken = cookies.refreshToken
     console.log(refreshToken);
-    
-    const user = await userModel.findOne({ refreshToken})
 
-    if(!user)
-         {
-        throw new Error ("No Refresh token in db or not matched")
-         }
-        //  verify the token
-        jwt.verify(refreshToken, process.env.SECRET_KEY, (err,decoded)=>{
-    if(err || user._id.toString() !== decoded.id){
-        throw new Error ("There is something wrong with refresh token")
+    const user = await userModel.findOne({ refreshToken })
+
+    if (!user) {
+        throw new Error("No Refresh token in db or not matched")
     }
-    // Generate a new access token
-    const accessToken = generateToken(user?._id)
-    res.json({accessToken})
-        })
+    //  verify the token
+    jwt.verify(refreshToken, process.env.SECRET_KEY, (err, decoded) => {
+        if (err || user._id.toString() !== decoded.id) {
+            throw new Error("There is something wrong with refresh token")
+        }
+        // Generate a new access token
+        const accessToken = generateToken(user?._id)
+        res.json({ accessToken })
+    })
 })
 
 
 
 // logout Functionality
-export const logout = asyncHandler(async(req,res)=>{
+export const logout = asyncHandler(async (req, res) => {
     const cookies = req.cookies
-    if(!cookies?.refreshToken) {
-        throw new Error ("No refresh token in cookies")
+    if (!cookies?.refreshToken) {
+        throw new Error("No refresh token in cookies")
     }
     const refreshToken = cookies.refreshToken
-    const user = await userModel.findOne({refreshToken})
-    if(!user){
-        res.clearCookie("refreshToken",{
+    const user = await userModel.findOne({ refreshToken })
+    if (!user) {
+        res.clearCookie("refreshToken", {
             httponly: true,
-            secure : true,
+            secure: true,
         })
         return res.sendStatus(204)   //forbidden
     }
-    await userModel.findOneAndUpdate(refreshToken,{
+    await userModel.findOneAndUpdate(refreshToken, {
         refreshToken: "",
     })
-    res.clearCookie("refreshToken",{
+    res.clearCookie("refreshToken", {
         httponly: true,
-        secure : true,
+        secure: true,
     })
     return res.sendStatus(204)   //forbidden
 
