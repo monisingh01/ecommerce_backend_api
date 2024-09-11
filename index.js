@@ -3,9 +3,12 @@ import dotenv from "dotenv"
 import dbConnect from './config/dbConnection.js';
 import authRoute from "./routes/auth_route.js"
 import productRoute from "./routes/product_route.js"
+import blogRoute from "./routes/blog_route.js"
+import categoryRoute from "./routes/product_category_route.js"
 import {notFound,errorHandler} from "./middlewares/errorHandler.js"
 import cookieParser from 'cookie-parser';
 import morgan from "morgan"
+import { createCategory } from './controllers/product_category_controller.js';
  
 
 dotenv.config()
@@ -21,6 +24,8 @@ app.use(cookieParser())
 
 app.use("/api/user",authRoute)
 app.use("/api/product",productRoute)
+app.use("/api/blog",blogRoute)
+app.use("/api/category",categoryRoute)
 
 
 app.use(notFound)
