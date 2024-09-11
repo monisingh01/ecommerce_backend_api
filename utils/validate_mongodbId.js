@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 
-export const validateMongoDbId = (id) => {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new Error("This id is not valid or not found");
-  }
+const validateMongodbId = (id) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new Error("Invalid MongoDB ID");
+    }
 };
+
+export default validateMongodbId;
