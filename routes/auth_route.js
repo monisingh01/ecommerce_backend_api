@@ -11,7 +11,7 @@ router.post('/forgot-password-token',forgetPasswordToken)
 router.post('/resetPassword',authMiddleware,resetPassword)
 
 router.get('/getAll', getAll)
-router.get('/:id', authMiddleware, isAdmin, getUser)
+router.get('/get/:id', authMiddleware, isAdmin, getUser)
 router.get('/refresh', handleRefreshToken)
 router.get('/logout',logout)
  router.put('/password',authMiddleware, updatePassword)
